@@ -1,4 +1,4 @@
-rootProject.name = "ComposeMultiplatformViewModel"
+rootProject.name = "ComposeMultiplatformSearch"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

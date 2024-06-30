@@ -11,16 +11,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -30,34 +39,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import kotlinx.coroutines.flow.MutableStateFlow
 import models.Products
 
 
 @Composable
 fun ProductCard(list: List<Products>) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                contentColor = Color.Black,
-                backgroundColor = Color.White,
-                title = {
-                    Text(
-                        "Home",
-                        maxLines = 1,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            tint = Color.Black,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                },
-            )
-        },
-    ) { innerPadding ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(5.dp),
@@ -69,8 +56,7 @@ fun ProductCard(list: List<Products>) {
                     ProductItem(data.title, data.description, data.price.toString(), data.discountPercentage.toString(), data.thumbnail)
                 }
             }
-        )    }
-
+        )
 }
 
 
@@ -81,8 +67,10 @@ fun ProductItem(name: String, description: String, price: String, discount: Stri
             .fillMaxWidth()
             .wrapContentHeight(),
         shape = MaterialTheme.shapes.medium,
-        elevation = 5.dp,
-        backgroundColor = MaterialTheme.colors.surface
+        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
     ) {
 
         Column(modifier = Modifier.height(380.dp).padding(10.dp)) {
@@ -99,7 +87,7 @@ fun ProductItem(name: String, description: String, price: String, discount: Stri
                     text = name,
                     maxLines = 3,
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = Color.Black,
                 )
                 Spacer(modifier = Modifier.height(3.dp))
@@ -108,7 +96,7 @@ fun ProductItem(name: String, description: String, price: String, discount: Stri
                     text = description,
                     fontWeight = FontWeight.Normal,
                     maxLines = 4,
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -116,17 +104,53 @@ fun ProductItem(name: String, description: String, price: String, discount: Stri
                     modifier = Modifier.padding(2.dp),
                     text = "$$price",
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.button,
+                    style = MaterialTheme.typography.bodySmall,
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
                     modifier = Modifier.padding(2.dp),
                     text = "$discount% discount",
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.button,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color(red=0.1f, green = 0.8f, blue = 0.0f)
                 )
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchBar(searchQuery: MutableStateFlow<String>) {
+    val query by searchQuery.collectAsState()
+    TextField(
+        value = query,
+        onValueChange = { searchQuery.value = it },
+        label = { Text("Search") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        ),
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Icon"
+            )
+        },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = {
+                    searchQuery.value = ""
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Clear Search"
+                    )
+                }
+            }
+        },
+    )
 }

@@ -24,5 +24,8 @@ class HomeViewModel : BaseViewModel(),KoinComponent {
     fun getProductList() = CoroutineScope(Dispatchers.IO).launch {
         fetchData(_uiStateProductList) { repository.getProducts() }
     }
+    fun searchProducts(query:String) = CoroutineScope(Dispatchers.IO).launch {
+        fetchData(_uiStateProductList) { repository.searchProducts(query) }
+    }
 
 }

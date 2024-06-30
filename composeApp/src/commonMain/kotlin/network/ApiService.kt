@@ -13,4 +13,9 @@ class ApiService(private val httpClient: HttpClient) {
     suspend fun getProducts(): ApiResponse =
         httpClient.get("${Constants.BASE_URL}$products").body<ApiResponse>()
 
+    suspend fun searchProducts(query:String): ApiResponse {
+        val searchQuery = "products/search?q=$query"
+        return httpClient.get("${Constants.BASE_URL}$searchQuery").body<ApiResponse>()
+    }
+
 }

@@ -14,4 +14,10 @@ class Repository(private val remoteDataSource: RemoteDataSource) {
         }
     }
 
+    suspend fun searchProducts(query:String): Flow<UiState<ApiResponse?>> {
+        return toResultFlow {
+            remoteDataSource.searchProducts(query)
+        }
+    }
+
 }
